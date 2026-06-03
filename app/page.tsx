@@ -6,6 +6,7 @@ import SpiritualityView from '@/components/SpiritualityView'
 import BusinessView from '@/components/BusinessView'
 import PersonalDevelopmentView from '@/components/PersonalDevelopmentView'
 import WeekView from '@/components/WeekView'
+import AIAssistant from '@/components/AIAssistant'
 
 const TABS = [
   { id: 'today', label: 'Today', icon: '🏠' },
@@ -55,6 +56,9 @@ export default function Home() {
         {activeTab === 'business' && <BusinessView />}
         {activeTab === 'growth' && <PersonalDevelopmentView />}
       </div>
+
+      {/* AI Assistant - floats on every tab */}
+      <AIAssistant />
 
       {/* Bottom navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-sand/30 px-2 py-2 z-10">
