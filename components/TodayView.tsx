@@ -3,6 +3,7 @@ import { useDashboard } from '@/lib/useDashboard'
 import { formatDate, generateId } from '@/lib/utils'
 import { useState } from 'react'
 import SeventyFiveHoly from './SeventyFiveHoly'
+import PushNotifications from './PushNotifications'
 
 export default function TodayView() {
   const { data, update } = useDashboard()
@@ -60,6 +61,9 @@ export default function TodayView() {
           </div>
         )}
       </div>
+
+      {/* Push Notifications */}
+      <PushNotifications />
 
       {/* 75 Holy */}
       <SeventyFiveHoly />
