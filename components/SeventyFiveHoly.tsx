@@ -1,6 +1,7 @@
 'use client'
 import { useDashboard } from '@/lib/useDashboard'
 import { formatDate, getDaysSince } from '@/lib/utils'
+import confetti from 'canvas-confetti'
 
 const HOLY_HABITS = [
   { id: 'water', label: '5 Bottles of Water', icon: '💧' },
@@ -24,6 +25,26 @@ export default function SeventyFiveHoly() {
 
   const toggle = (habitId: string) => {
     const exists = isChecked(habitId)
+    if (!exists) {
+      confetti({
+        particleCount: 60,
+        spread: 50,
+        origin: { y: 0.6 },
+        colors: ['#d68d84', '#7a816c', '#cfbb9f', '#866a5b', '#8e967d'],
+      })
+      // Play pop sound
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const oscillator = ctx.createOscillator()
+      const gainNode = ctx.createGain()
+      oscillator.connect(gainNode)
+      gainNode.connect(ctx.destination)
+      oscillator.frequency.setValueAtTime(800, ctx.currentTime)
+      oscillator.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1)
+      gainNode.gain.setValueAtTime(0.3, ctx.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1)
+      oscillator.start(ctx.currentTime)
+      oscillator.stop(ctx.currentTime + 0.1)
+    }
     const newLogs = exists
       ? logs.filter(l => !(l.habitId === habitId && l.date === today))
       : [...logs, { habitId, date: today }]
@@ -32,6 +53,17 @@ export default function SeventyFiveHoly() {
 
   const todayCount = HOLY_HABITS.filter(h => isChecked(h.id)).length
   const percent = Math.round((todayCount / HOLY_HABITS.length) * 100)
+
+  // Big confetti when all habits done
+  const allDone = todayCount === HOLY_HABITS.length
+  if (allDone) {
+    confetti({
+      particleCount: 200,
+      spread: 100,
+      origin: { y: 0.5 },
+      colors: ['#d68d84', '#7a816c', '#cfbb9f', '#866a5b', '#8e967d'],
+    })
+  }
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-sand/30">
@@ -45,6 +77,12 @@ export default function SeventyFiveHoly() {
           <div className="text-xs text-warm">{todayCount}/{HOLY_HABITS.length} today</div>
         </div>
       </div>
+
+      {allDone && (
+        <div className="bg-sage/10 border border-sage/30 rounded-xl p-3 mb-4 text-center">
+          <p className="text-sm text-sage font-medium">🎉 All habits complete today! You're unstoppable!</p>
+        </div>
+      )}
 
       <div className="w-full bg-cream rounded-full h-2 mb-5">
         <div
