@@ -1,7 +1,6 @@
 'use client'
 import { useDashboard } from '@/lib/useDashboard'
 import { formatDate, getDaysSince } from '@/lib/utils'
-import confetti from 'canvas-confetti'
 
 const HOLY_HABITS = [
   { id: 'water', label: '5 Bottles of Water', icon: '💧' },
@@ -23,27 +22,31 @@ export default function SeventyFiveHoly() {
   const isChecked = (habitId: string) =>
     logs.some(l => l.habitId === habitId && l.date === today)
 
-  const toggle = (habitId: string) => {
+  const toggle = async (habitId: string) => {
     const exists = isChecked(habitId)
     if (!exists) {
-      confetti({
-        particleCount: 60,
-        spread: 50,
-        origin: { y: 0.6 },
-        colors: ['#d68d84', '#7a816c', '#cfbb9f', '#866a5b', '#8e967d'],
-      })
-      // Play pop sound
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const oscillator = ctx.createOscillator()
-      const gainNode = ctx.createGain()
-      oscillator.connect(gainNode)
-      gainNode.connect(ctx.destination)
-      oscillator.frequency.setValueAtTime(800, ctx.currentTime)
-      oscillator.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1)
-      gainNode.gain.setValueAtTime(0.3, ctx.currentTime)
-      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1)
-      oscillator.start(ctx.currentTime)
-      oscillator.stop(ctx.currentTime + 0.1)
+      try {
+        const confetti = (await import('canvas-confetti')).default
+        confetti({
+          particleCount: 60,
+          spread: 50,
+          origin: { y: 0.6 },
+          colors: ['#d68d84', '#7a816c', '#cfbb9f', '#866a5b', '#8e967d'],
+        })
+      } catch (e) {}
+      try {
+        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+        const oscillator = ctx.createOscillator()
+        const gainNode = ctx.createGain()
+        oscillator.connect(gainNode)
+        gainNode.connect(ctx.destination)
+        oscillator.frequency.setValueAtTime(800, ctx.currentTime)
+        oscillator.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1)
+        gainNode.gain.setValueAtTime(0.3, ctx.currentTime)
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1)
+        oscillator.start(ctx.currentTime)
+        oscillator.stop(ctx.currentTime + 0.1)
+      } catch (e) {}
     }
     const newLogs = exists
       ? logs.filter(l => !(l.habitId === habitId && l.date === today))
@@ -53,17 +56,7 @@ export default function SeventyFiveHoly() {
 
   const todayCount = HOLY_HABITS.filter(h => isChecked(h.id)).length
   const percent = Math.round((todayCount / HOLY_HABITS.length) * 100)
-
-  // Big confetti when all habits done
   const allDone = todayCount === HOLY_HABITS.length
-  if (allDone) {
-    confetti({
-      particleCount: 200,
-      spread: 100,
-      origin: { y: 0.5 },
-      colors: ['#d68d84', '#7a816c', '#cfbb9f', '#866a5b', '#8e967d'],
-    })
-  }
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-sand/30">
@@ -80,7 +73,7 @@ export default function SeventyFiveHoly() {
 
       {allDone && (
         <div className="bg-sage/10 border border-sage/30 rounded-xl p-3 mb-4 text-center">
-          <p className="text-sm text-sage font-medium">🎉 All habits complete today! You're unstoppable!</p>
+          <p className="text-sm text-sage font-medium">🎉 All habits complete today!</p>
         </div>
       )}
 
@@ -109,13 +102,9 @@ export default function SeventyFiveHoly() {
               {habit.label}
             </span>
             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-              isChecked(habit.id)
-                ? 'bg-sage border-sage'
-                : 'border-sand'
+              isChecked(habit.id) ? 'bg-sage border-sage' : 'border-sand'
             }`}>
-              {isChecked(habit.id) && (
-                <span className="text-white text-xs">✓</span>
-              )}
+              {isChecked(habit.id) && <span className="text-white text-xs">✓</span>}
             </div>
           </button>
         ))}
