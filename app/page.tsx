@@ -21,16 +21,29 @@ type Tab = typeof TABS[number]['id']
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>('today')
 
+  const refresh = () => window.location.reload()
+
   return (
     <main className="min-h-screen bg-cream pb-24">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-cream/95 backdrop-blur-sm border-b border-sand/30 px-4 py-3">
-        <h1 className="text-xl font-light text-deeper text-center">
-          The Hubss ✦
-        </h1>
-        <p className="text-xs text-warm text-center">
-          Spirituality · Business · Personal Development
-        </p>
+        <div className="flex items-center justify-between">
+          <div className="w-8" />
+          <div className="text-center">
+            <h1 className="text-xl font-light text-deeper">
+              The Hubss ✦
+            </h1>
+            <p className="text-xs text-warm">
+              Spirituality · Business · Personal Development
+            </p>
+          </div>
+          <button
+            onClick={refresh}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-cream border border-sand/30 text-warm"
+          >
+            ↻
+          </button>
+        </div>
       </div>
 
       {/* Content */}
