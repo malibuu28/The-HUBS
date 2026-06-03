@@ -4,6 +4,7 @@ import { formatDate, generateId } from '@/lib/utils'
 import { useState } from 'react'
 import SeventyFiveHoly from './SeventyFiveHoly'
 import PushNotifications from './PushNotifications'
+import CalendarWidget from './CalendarWidget'
 
 export default function TodayView() {
   const { data, update } = useDashboard()
@@ -61,6 +62,9 @@ export default function TodayView() {
           </div>
         )}
       </div>
+
+      {/* Calendar */}
+      <CalendarWidget />
 
       {/* Push Notifications */}
       <PushNotifications />
