@@ -6,9 +6,12 @@ const sql = neon(process.env.DATABASE_URL!)
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
+  const error = searchParams.get('error')
 
-  if (!code) {
-    return NextResponse.redirect('https://the-hubs.vercel.app?error=no_code')
+  if (error || !code) {
+    return NextResponse.redirect(
+      'https://the-hubs.vercel.app?error=' + (error || 'no_code')
+    )
   }
 
   try {
@@ -26,6 +29,12 @@ export async function GET(request: Request) {
 
     const tokens = await tokenRes.json()
 
+    if (tokens.error) {
+      return NextResponse.redirect(
+        'https://the-hubs.vercel.app?error=' + tokens.error
+      )
+    }
+
     await sql`
       CREATE TABLE IF NOT EXISTS google_tokens (
         id SERIAL PRIMARY KEY,
@@ -42,9 +51,13 @@ export async function GET(request: Request) {
       DO UPDATE SET tokens = ${JSON.stringify(tokens)}, updated_at = NOW()
     `
 
-    return NextResponse.redirect('https://the-hubs.vercel.app?calendar=connected')
-  } catch (error) {
-    console.error(error)
-    return NextResponse.redirect('https://the-hubs.vercel.app?error=token_failed')
+    return NextResponse.redirect(
+      'https://the-hubs.vercel.app?calendar=connected'
+    )
+  } catch (error: any) {
+    console.error('Calendar callback error:', error)
+    return NextResponse.redirect(
+      'https://the-hubs.vercel.app?error=server_error'
+    )
   }
 }
